@@ -20,6 +20,13 @@ class Pointers {
         };
     }
 
+    /**
+     *
+     * return [event name, event sub, event namespace]
+     * @param eventsWithNamespace
+     * @returns {[string , null|string, null|string][]}
+     * @private
+     */
     _splitEvents(eventsWithNamespace)
     {
         let events = eventsWithNamespace.split(' ');
@@ -89,7 +96,7 @@ class Pointers {
 
         //if the event is not exist in our event list, then assign it directly to jquery
         if(!this.events.hasOwnProperty(eventName)){
-            this.currentJqueryElement.on(eventName+eventNamespace,selector,data,handler);
+            this.currentJqueryElement.on(eventName+"."+eventNamespace,selector,data,handler);
             return null;
         }
 
@@ -97,9 +104,8 @@ class Pointers {
         if(!this.elements.has(this.currentSelector))
         {
             this.elements.set(this.currentSelector,[]);
-            // this.currentJqueryElement.on(`pointerdown.pointers pointermove.pointers pointercancel.pointers pointerup.pointers pointerleave.pointers`,
-            this.currentJqueryElement.on(`pointerdown.pointers pointermove.pointers pointerup.pointers`,
-                selector,data,this._handle.bind(this));
+            //don't send data here, it will only work for the first event
+            this.currentJqueryElement.on(`pointerenter.pointers pointerdown.pointers pointermove.pointers pointerup.pointers pointercancel.pointers pointerleave.pointers`,this._handle.bind(this));
         }
 
 
@@ -146,26 +152,46 @@ class Pointers {
         return this;
     }
 
-    off(eventWithNamespace,selector)
+    off(eventsWithNamespace,selector)
     {
-        let eventArr = eventWithNamespace.split(".");
-        let namespace = eventArr[1];
-        let eventName = eventArr[0];
+        let _this = this;
+        let eventStrings = this._splitEvents(eventsWithNamespace);
+        let elementEvents = _this.getEvents();
 
-        //if the event is not exist in our event list, then assign it directly to jquery
-        if(!this.events.hasOwnProperty(eventName)){
-            this.currentJqueryElement.off(eventWithNamespace,selector);
-            return this;
-        }
+        //remove the events from the element events
+        eventStrings.forEach(eventString => {
+            let eventName = eventString[0];
+            let eventSub = eventString[1];
+            let eventNamespace = eventString[2];
+            //if the event is not exist in our event list, then assign it directly to jquery
+            if(!_this.events.hasOwnProperty(eventName)){
 
-        let pointerNamespace = "pointers-"+eventName;
-        if(namespace)
+                _this.currentJqueryElement.off(eventName+"."+eventNamespace,selector);
+                return this;
+            }
+
+            //get the event index
+            let eventIndex = elementEvents.findIndex(event => {
+                //if event name space is not set then remove all that sub events
+                if(eventNamespace)
+                    return event.name === eventName && event.sub === eventSub && event.namespace === eventNamespace;
+                else
+                    return event.name === eventName && event.sub === eventSub;
+            });
+
+            //event not found
+            if(eventIndex === -1)
+                return;
+
+            elementEvents.splice(eventIndex,1);
+        });
+
+        if(elementEvents.length === 0)
         {
-            pointerNamespace += "-"+namespace;
-        }
+            this.currentJqueryElement.off(`pointerenter.pointers pointerdown.pointers pointermove.pointers pointercancel.pointers pointerup.pointers pointerleave.pointers`,
+                selector);
 
-        this.currentJqueryElement.off(`pointerenter.pointers pointerdown.pointers pointermove.pointers pointercancel.pointers pointerup.pointers pointerleave.pointers`,
-            selector);
+        }
 
         return this;
     }
@@ -177,12 +203,12 @@ class Pointers {
     pointersCount(condition) {
         if(typeof condition === 'number')
         {
-            this.conditions.push(function (){
-                return this.currentPointers === condition;
+            this.conditions.push(function (e,pevent){
+                return Object.keys(pevent.currentPointers).length === condition;
             });
         }else{
-            this.conditions.push(function (){
-                return condition(this.currentPointers);
+            this.conditions.push(function (e,pevent){
+                return condition(pevent.currentPointers);
             });
         }
 

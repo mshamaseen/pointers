@@ -124,17 +124,23 @@ export class BaseEvent {
      */
     runIfOk(e)
     {
-        let _this = this;
         if(this.validateConditions(e)){
 
-            this.triggeredAt = _this._getTime();
-            e.pevent = JSON.parse(JSON.stringify(this));
-            this.handler(e);
+            this.triggeredAt = this._getTime();
+            e.pevent = {...this};
+            e.data = this.data;
 
-            return true;
-
+            if(this.selector)
+            {
+                let currentTarget = $(this.selector)[0];
+                if(e.target == currentTarget)
+                {
+                    e.currentTarget = currentTarget;
+                    this.handler.bind(currentTarget)(e);
+                }
+            }else
+                this.handler.bind($(this.currentSelector)[0])(e);
         }
-        return false;
     }
 
     getAvailableSubs()
@@ -145,5 +151,14 @@ export class BaseEvent {
     _getTime()
     {
         return (new Date()).getTime();
+    }
+
+    /**
+     * Transfer this class objects to events attributes
+     * @private
+     */
+    _toEventAttributes()
+    {
+
     }
 }

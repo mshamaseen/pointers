@@ -13,7 +13,7 @@ export class Tap extends BaseEvent {
     }
 
     pointerup(e) {
-        if(this.timeSinceFirstInteraction() <= this.pressingThreshold)
+        if(this.timeSinceFirstInteraction() <= this.pressingThreshold && !this.hasMoved)
         {
             this.succeed = true;
             this.runIfOk(e);
