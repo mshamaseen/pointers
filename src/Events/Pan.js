@@ -19,11 +19,11 @@ export class Pan extends BaseEvent {
     }
 
     pointermove(e) {
-        if(!this.hasMoved && this.startingCoordinates && this.distance(e.clientX, e.clientY) >= this.moveingThreshold)
+        if(!this.hasMoved && this.startingCoordinates && this.distance(e.clientX, e.clientY) >= this.movingThreshold)
         {
             this.hasMoved = true;
             this.succeed = true;
-
+            console.info("pan start");
             if(this.sub === 'start')
             {
                 this.runIfOk(e);

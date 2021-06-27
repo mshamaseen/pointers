@@ -101,6 +101,7 @@ export class BaseEvent {
             this.startingCoordinates = null;
             this.firstInteractionAt = null;
             this.hasMoved = null;
+            this.succeed = false;
         }
     }
 
