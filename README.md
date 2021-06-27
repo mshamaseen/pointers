@@ -1,7 +1,7 @@
 # pointers
 is a open-source library that can recognize gestures made by touch, mouse and pointerEvents.
 
-##QuickStart
+## QuickStart
 If you know how to use JQuery, then you already know how to use Pointers!
 
 ```javascript
