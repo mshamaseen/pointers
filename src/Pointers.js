@@ -2,7 +2,16 @@ import {Tap} from "./Events/Tap";
 import {Press} from "./Events/Press";
 import {Pan} from "./Events/Pan";
 import {NthTap} from "./Events/NthTap";
+import {Mouse} from "./Events/Mouse";
 
+/**
+ * @property {string|null} currentSelector - the current element selector
+ * @property {string|null} currentJqueryElement - the current JQuery element
+ * @property {Map} elements - All the element managed by Pointers
+ * @property {Array} conditions - All the conditions that will be added to the next event
+ * @property {Object} options - All the options that will be added to the next event
+ * @property {Object} events - The current supported events
+ */
 class Pointers {
 
     constructor(){
@@ -16,15 +25,15 @@ class Pointers {
             tap: Tap,
             nthtap: NthTap,
             press:Press,
-            pan:Pan
+            pan:Pan,
+            mouse:Mouse
         };
     }
 
     /**
-     *
-     * return [event name, event sub, event namespace]
+     * @description return [event name, event sub, event namespace]
      * @param eventsWithNamespace
-     * @returns {[string , null|string, null|string][]}
+     * @returns {Object}
      * @private
      */
     _splitEvents(eventsWithNamespace)
@@ -55,6 +64,14 @@ class Pointers {
         });
     }
 
+    /**
+     *
+     * @param eventsWithNamespace
+     * @param selector
+     * @param data
+     * @param handler
+     * @returns {Pointers}
+     */
     on(eventsWithNamespace,selector,data,handler){
         let _this = this;
 
@@ -144,7 +161,7 @@ class Pointers {
         return this;
     }
 
-    select(element){
+    select(element = null){
         this._reset();
         this.currentJqueryElement = $(element);
         this.currentSelector = element;
@@ -152,6 +169,12 @@ class Pointers {
         return this;
     }
 
+    /**
+     *
+     * @param eventsWithNamespace
+     * @param selector
+     * @returns {Pointers}
+     */
     off(eventsWithNamespace,selector)
     {
         let _this = this;
@@ -198,47 +221,57 @@ class Pointers {
 
     /**
      *
-     * @param {Number|function} condition
+     * @param {Number} condition
      */
     pointersCount(condition) {
-        if(typeof condition === 'number')
-        {
-            this.conditions.push(function (e,pevent){
-                return Object.keys(pevent.currentPointers).length === condition;
-            });
-        }else{
-            this.conditions.push(function (e,pevent){
-                return condition(pevent.currentPointers);
-            });
-        }
-
+        this.conditions.push(function (e,pevent){
+            return Object.keys(pevent.currentPointers).length === condition;
+        });
         return this;
     }
 
     /**
      *
      * @param callable
+     * @return {this}
      */
     condition(callable){
         this.conditions.push(callable);
         return this;
     }
 
+    /**
+     *
+     * @param {object} options
+     * @returns {Pointers}
+     */
     setOptions(options)
     {
         this.options = options;
         return this;
     }
 
+    /**
+     *
+     * @returns {V}
+     */
     getEvents()
     {
         return this.elements.get(this.currentSelector);
+    }
+
+    /**
+     *
+     * @param eventName
+     * @param eventObject
+     * @returns {Pointers}
+     */
+    addEvent(eventName,eventObject)
+    {
+        this.events[eventName] = eventObject;
+        return this;
     }
 }
 
 let $pointer = new Pointers();
 window.$p = $pointer.select.bind($pointer);
-
-// window.$p = function(selector){
-//     return (new Pointers()).select(selector);
-// };

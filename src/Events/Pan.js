@@ -53,9 +53,4 @@ export class Pan extends BaseEvent {
 
         super.pointercancel(e);
     }
-
-    waitingTime()
-    {
-        return 0;
-    }
 }

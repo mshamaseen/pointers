@@ -6,8 +6,8 @@ export class NthTap extends BaseEvent {
         super(attributes);
         this.pressingThreshold = 250;
         this.maxTimeBetweenTaps = 300;
-        this.tapCount = 0;
-
+        this._tapCount = 0;
+        this.sub = 2;
     }
 
     handle(e)
@@ -19,15 +19,15 @@ export class NthTap extends BaseEvent {
         let _this = this;
         if(this.timeSinceFirstInteraction() <= this.pressingThreshold)
         {
-            this.tapCount++;
-            let currentCount = this.tapCount;
+            this._tapCount++;
+            let currentCount = this._tapCount;
 
             setTimeout(function() {
-                if(currentCount === _this.tapCount)
-                    _this.tapCount = 0;
+                if(currentCount === _this._tapCount)
+                    _this._tapCount = 0;
             },this.maxTimeBetweenTaps);
 
-            if(this.tapCount === Number(this.sub))
+            if(this._tapCount === Number(this.sub))
                 this.runIfOk(e);
         }
 

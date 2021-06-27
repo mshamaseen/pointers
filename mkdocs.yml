@@ -1,0 +1,25 @@
+site_name: Pointers Documentation
+site_url: https://example.com/
+repo_url: https://github.com/mshamaseen/pointers.git
+site_author: Mohammad AlShamaseen
+copyright: MIT License
+nav:
+  - Overview: index.md
+  - Installation: Installation.md
+  - Usage: Pointers.md
+  - Events:
+    - BaseEvent: Events/BaseEvent.md
+    - Tap: Events/Tap.md
+    - NthTap: Events/NthTap.md
+    - Press: Events/Tap.md
+    - Pan: Events/Pan.md
+    - Mouse: Events/Mouse.md
+    - Create your custom event: Events/CustomEvent.md
+theme:
+  name: readthedocs
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: "#"
+
+extra_css: [extra.css]

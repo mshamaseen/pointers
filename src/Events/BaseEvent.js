@@ -1,15 +1,22 @@
+/**
+ *
+ */
 export class BaseEvent {
 
+    /**
+     *
+     * @param attributes
+     */
     constructor(attributes)
     {
-        this.setAttributes(attributes);
+        this._setAttributes(attributes);
 
         //assigned inside the event
         this.currentPointers = {};
         this.startingCoordinates = null;
         this.firstInteractionAt = null;
         this.hasMoved = false;
-        this.moveingThreshold = 2;
+        this.movingThreshold = 2;
         this.triggeredAt = null;
 
         //this will be true if the event succeed on its main propose
@@ -18,7 +25,7 @@ export class BaseEvent {
         this.subs = [];
     }
 
-    setAttributes(attributes)
+    _setAttributes(attributes)
     {
         let _this = this;
         Object.keys(attributes).forEach(key => {
@@ -32,8 +39,6 @@ export class BaseEvent {
         {
             return this[e.type](e);
         }
-
-        return false;
     }
 
     validateConditions(e)
@@ -57,8 +62,6 @@ export class BaseEvent {
         }
 
         this.currentPointers[e.pointerId] = e;
-
-        return false;
     }
 
     /**
@@ -67,30 +70,30 @@ export class BaseEvent {
      */
     pointerup(e)
     {
-        this._reset(e);
-        return false;
+        this.reset(e);
     }
 
     pointermove(e)
     {
-        if(!this.hasMoved && this.startingCoordinates && this.distance(e.clientX, e.clientY) >= this.moveingThreshold)
+        if(!this.hasMoved && this.startingCoordinates && this.distance(e.clientX, e.clientY) >= this.movingThreshold)
         {
             this.hasMoved = true;
         }
-        return false;
     }
 
     pointerleave(e){
-        this._reset(e);
-        return false;
+        this.reset(e);
     }
 
     pointercancel(e){
-        this._reset(e);
-        return false;
+        this.reset(e);
     }
 
-    _reset(e){
+    pointerenter(e){
+
+    }
+
+    reset(e){
         delete this.currentPointers[e.pointerId];
 
         if(Object.keys(this.currentPointers).length === 0)
@@ -151,14 +154,5 @@ export class BaseEvent {
     _getTime()
     {
         return (new Date()).getTime();
-    }
-
-    /**
-     * Transfer this class objects to events attributes
-     * @private
-     */
-    _toEventAttributes()
-    {
-
     }
 }
