@@ -23,7 +23,6 @@ export class Pan extends BaseEvent {
         {
             this.hasMoved = true;
             this.succeed = true;
-            console.info("pan start");
             if(this.sub === 'start')
             {
                 this.runIfOk(e);
