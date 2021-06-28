@@ -67,6 +67,8 @@ $p('Selector').pointersCount(2).on('pan:move',function(){
 })
 ```
 
+!!! Note
+    pointersCount method will be ignored on events caused by mouse, as mouse is always assumed to have one pointer count.
 
 ## Pass more properties to events
 

@@ -2,7 +2,7 @@
   "name": "jquery-pointers",
   "version": "1.0.2",
   "description": "a flexible open-source library that can recognize gestures made by touch, mouse, and pointer-events.",
-  "main": "index.js",
+  "main": "pointers.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

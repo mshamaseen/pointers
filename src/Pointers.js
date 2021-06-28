@@ -225,7 +225,7 @@ class Pointers {
      */
     pointersCount(condition) {
         this.conditions.push(function (e,pevent){
-            return Object.keys(pevent.currentPointers).length === condition;
+            return Object.keys(pevent.currentPointers).length === condition || e.pointerType === 'mouse';
         });
         return this;
     }
